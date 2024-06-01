@@ -139,7 +139,7 @@ def main():
     print("LABELS:")
     print(labels)
 
-
+    return
 
     # Create a new label
     label_body = {
