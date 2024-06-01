@@ -78,7 +78,8 @@ def apply_label(service, user_id, msg_id, label_id):
 
 
 def main():
-    """Shows basic usage of the Gmail API.
+    """
+    Shows basic usage of the Gmail API.
     Lists the user's Gmail labels.
     """
     creds = None
@@ -126,11 +127,11 @@ def main():
     }
 
     # CREATE A NEW LABEL 
-    # try:
-    #     label = service.users().labels().create(userId='me', body=label_body).execute()
-    #     print(f"Label created: {label['name']} (ID: {label['id']})")
-    # except Exception as error:
-    #     print(f"An error occurred: {error}")
+    try:
+        label = service.users().labels().create(userId='me', body=label_body).execute()
+        print(f"Label created: {label['name']} (ID: {label['id']})")
+    except Exception as error:
+        print(f"An error occurred: {error}")
             
     # List all emails and open them one by one
     try:
@@ -147,12 +148,15 @@ def main():
                 get_full_message(service, 'me', message['id'])
                 # msg = service.users().messages().get(userId='me', id=message['id']).execute()
                 # print(f"Message snippet: {msg['snippet']} (ID: {msg['id']})")
+                #
                 # Label a message
+                #
                 apply_label(service, 'me', message['id'], label['id'])
     except Exception as error:
         print(f"An error occurred: {error}")
     
     
 if __name__ == "__main__":
-  main()
+    main()
+
 # [END gmail_quickstart]
