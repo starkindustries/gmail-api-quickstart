@@ -141,41 +141,41 @@ def main():
 
     return
 
-    # Create a new label
-    label_body = {
-        'name': 'foo',
-        'labelListVisibility': 'labelShow',
-        'messageListVisibility': 'show'
-    }
+    # # Create a new label
+    # label_body = {
+    #     'name': 'foo',
+    #     'labelListVisibility': 'labelShow',
+    #     'messageListVisibility': 'show'
+    # }
 
-    # CREATE A NEW LABEL 
-    try:
-        label = service.users().labels().create(userId='me', body=label_body).execute()
-        print(f"Label created: {label['name']} (ID: {label['id']})")
-    except Exception as error:
-        print(f"An error occurred: {error}")
+    # # CREATE A NEW LABEL 
+    # try:
+    #     label = service.users().labels().create(userId='me', body=label_body).execute()
+    #     print(f"Label created: {label['name']} (ID: {label['id']})")
+    # except Exception as error:
+    #     print(f"An error occurred: {error}")
             
-    # List all emails and open them one by one
-    try:
-        # Call the Gmail API to list messages
-        results = service.users().messages().list(userId='me', maxResults=10).execute()
-        messages = results.get('messages', [])
+    # # List all emails and open them one by one
+    # try:
+    #     # Call the Gmail API to list messages
+    #     results = service.users().messages().list(userId='me', maxResults=10).execute()
+    #     messages = results.get('messages', [])
 
-        if not messages:
-            print('No messages found.')
-        else:
-            print('Messages:')
-            for message in messages:
-                # breakpoint()
-                get_full_message(service, 'me', message['id'])
-                # msg = service.users().messages().get(userId='me', id=message['id']).execute()
-                # print(f"Message snippet: {msg['snippet']} (ID: {msg['id']})")
-                #
-                # Label a message
-                #
-                apply_label(service, 'me', message['id'], label['id'])
-    except Exception as error:
-        print(f"An error occurred: {error}")
+    #     if not messages:
+    #         print('No messages found.')
+    #     else:
+    #         print('Messages:')
+    #         for message in messages:
+    #             # breakpoint()
+    #             get_full_message(service, 'me', message['id'])
+    #             # msg = service.users().messages().get(userId='me', id=message['id']).execute()
+    #             # print(f"Message snippet: {msg['snippet']} (ID: {msg['id']})")
+    #             #
+    #             # Label a message
+    #             #
+    #             apply_label(service, 'me', message['id'], label['id'])
+    # except Exception as error:
+    #     print(f"An error occurred: {error}")
     
     
 if __name__ == "__main__":
