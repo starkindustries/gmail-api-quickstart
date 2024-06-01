@@ -34,31 +34,39 @@ SCOPES = ["https://www.googleapis.com/auth/gmail.modify"]
 
 def get_full_message(service, user_id, msg_id):
     try:
+        # Fetch the full message using the Gmail API
         message = service.users().messages().get(userId=user_id, id=msg_id, format='full').execute()
 
+        # Extract headers from the message payload
         headers = message['payload']['headers']
         for header in headers:
             if header['name'] == 'Subject':
-                print("Subject: ", header['value'])
+                print("Subject: ", header['value'])  # Print the email subject
             if header['name'] == 'From':
-                print("From: ", header['value'])
+                print("From: ", header['value'])  # Print the sender's email address
             if header['name'] == 'To':
-                print("To: ", header['value'])
+                print("To: ", header['value'])  # Print the recipient's email address
 
+        # Check if the message payload contains parts
         if 'parts' in message['payload']:
             for part in message['payload']['parts']:
                 if part['mimeType'] == 'text/plain':
+                    # Decode and print the plain text body of the email
                     body = base64.urlsafe_b64decode(part['body']['data']).decode('utf-8')
                     print("Body: ", body)
                 elif part['mimeType'] == 'text/html':
+                    # Decode and print the HTML body of the email
                     body = base64.urlsafe_b64decode(part['body']['data']).decode('utf-8')
                     print("HTML Body: ", body)
         else:
+            # If no parts are found, decode and print the body of the email directly
             body = base64.urlsafe_b64decode(message['payload']['body']['data']).decode('utf-8')
             print("Body: ", body)
 
     except HttpError as error:
+        # Print the error if one occurs during the API call
         print(f'An error occurred: {error}')
+
 
 
 def apply_label(service, user_id, msg_id, label_id):
