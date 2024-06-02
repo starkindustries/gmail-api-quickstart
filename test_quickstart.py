@@ -3,6 +3,7 @@ from quickstart import *
 
 def test_github_secrets():
     # Note: reminder to add this env variable locally for this test to pass on local machine
+    # export MY_TEST_SECRET=this_is_some_super_secret_info
     my_secret = os.getenv('MY_TEST_SECRET')
     assert my_secret == "this_is_some_super_secret_info"
 
