@@ -32,7 +32,7 @@ from googleapiclient.errors import HttpError
 SCOPES = ["https://www.googleapis.com/auth/gmail.modify"]
 
 
-def get_credentials():
+def get_api_service_obj():
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
     # time.
@@ -51,13 +51,13 @@ def get_credentials():
         # Save the credentials for the next run
         with open("token.json", "w") as token:
             token.write(creds.to_json())
-    return creds
+    service = build("gmail", "v1", credentials=creds)
+    return service
 
 
-def get_all_labels(creds):
+def get_all_labels(service):
     try:
         # Call the Gmail API
-        service = build("gmail", "v1", credentials=creds)
         results = service.users().labels().list(userId="me").execute()
         labels = results.get("labels", [])
 
@@ -133,9 +133,9 @@ def main():
     Shows basic usage of the Gmail API.
     Lists the user's Gmail labels.
     """
-    creds = get_credentials()
+    service = get_api_service_obj()
 
-    labels = get_all_labels(creds)
+    labels = get_all_labels(service)
     print("LABELS:")
     print(labels)
 
