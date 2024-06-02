@@ -52,6 +52,9 @@ jobs:
         # Reference example:
         # https://docs.github.com/en/rest/actions/secrets?apiVersion=2022-11-28#create-or-update-an-organization-secret
         NEW_TOKEN=$(cat token.json)
+        echo NEW_TOKEN: $NEW_TOKEN
+        echo ACCESS_TOKEN: $ACCESS_TOKEN
+        echo github.repository: ${{ github.repository }}
         curl -L -X PUT \
         -H "Accept: application/vnd.github+json" \
         -H "Authorization: Bearer $ACCESS_TOKEN" \
