@@ -51,7 +51,8 @@ jobs:
       run: | 
         # Reference example:
         # https://docs.github.com/en/rest/actions/secrets?apiVersion=2022-11-28#create-or-update-an-organization-secret
-        NEW_TOKEN='$(cat token.json)'
+        # Note: jq is a command-line json processor
+        NEW_TOKEN=$(cat token.json | jq -Rs .)
         echo NEW_TOKEN: $NEW_TOKEN
         echo ACCESS_TOKEN: $ACCESS_TOKEN
         echo github.repository: ${{ github.repository }}
