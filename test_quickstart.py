@@ -49,7 +49,7 @@ def test_list_messages():
     
     for message in messages:
         message_data = quickstart.get_full_message(service, message['id'])
-        # print(message_data)
+
         if message_data["headers"]["Subject"] == test_message["Subject"]:
             assert test_message["From"] in message_data["headers"]["From"]
             assert test_message["To"] in message_data["headers"]["To"]
@@ -57,3 +57,24 @@ def test_list_messages():
             # Remove the line breaks from the message
             message_body = message_data["body"].replace('\r\n', ' ').replace('\n', ' ').strip()
             assert test_message["body"] == message_body
+
+
+def test_apply_label_to_message():
+    service = quickstart.get_api_service_obj()
+    messages = quickstart.list_messages(service)
+    assert messages
+
+    # Create new random label
+    randnum = random.randint(1000, 9999)
+    label_name = "foo" + str(randnum)
+    new_label = quickstart.create_label(service, label_name)
+
+    # Find test email 002
+    for message in messages:
+        message_data = quickstart.get_full_message(service, message['id'])
+        if message_data["headers"]["Subject"] == "test email 002":
+            result_message = quickstart.apply_label(service, 'me', message['id'], new_label['id'])
+            assert new_label["id"] in result_message["labelIds"]
+    
+    # Clean-up: delete random label
+    assert quickstart.delete_label(service, new_label["id"])

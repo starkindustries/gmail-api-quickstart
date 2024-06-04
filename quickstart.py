@@ -160,10 +160,10 @@ def apply_label(service, msg_id, label_id):
         
         print(f"Label applied: {label_id} to message ID: {msg_id}")
         print("Updated Labels: ", message['labelIds'])
-        return True
+        return message
     except HttpError as error:
         print(f'An error occurred: {error}')
-        return False
+        return None
 
 
 def main():
