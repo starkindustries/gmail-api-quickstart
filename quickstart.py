@@ -55,7 +55,7 @@ def get_api_service_obj():
     return service
 
 
-def get_all_labels(service):
+def list_labels(service):
     try:
         # Call the Gmail API
         results = service.users().labels().list(userId="me").execute()
@@ -65,11 +65,6 @@ def get_all_labels(service):
             print("No labels found.")
             return None
         return labels
-        # print("Labels:")
-        # for label in labels:
-        #     print(label["name"])
-        #     if label["name"] == "foo":
-        #         break
     except HttpError as error:
         # TODO: Handle errors from gmail API.
         print(f"An error occurred: {error}")
@@ -101,7 +96,25 @@ def delete_label(service, label_id):
         return False
 
 
-def get_full_message(service, user_id, msg_id):
+def list_messages(service):
+    try:
+        # Call the Gmail API to list messages
+        results = service.users().messages().list(userId='me', maxResults=10).execute()
+        messages = results.get('messages', [])
+        return messages
+    except Exception as error:
+        print(f"An error occurred: {error}")
+        return None
+
+
+def get_full_message(service, msg_id):
+    user_id = "me"
+    message_data = {
+        "headers": {},
+        "body": "",
+        "html_body": ""
+    }
+
     try:
         # Fetch the full message using the Gmail API
         message = service.users().messages().get(userId=user_id, id=msg_id, format='full').execute()
@@ -109,35 +122,34 @@ def get_full_message(service, user_id, msg_id):
         # Extract headers from the message payload
         headers = message['payload']['headers']
         for header in headers:
-            if header['name'] == 'Subject':
-                print("Subject: ", header['value'])  # Print the email subject
-            if header['name'] == 'From':
-                print("From: ", header['value'])  # Print the sender's email address
-            if header['name'] == 'To':
-                print("To: ", header['value'])  # Print the recipient's email address
+            message_data["headers"][header['name']] = header['value']
 
         # Check if the message payload contains parts
         if 'parts' in message['payload']:
             for part in message['payload']['parts']:
                 if part['mimeType'] == 'text/plain':
-                    # Decode and print the plain text body of the email
+                    # Decode and store the plain text body of the email
                     body = base64.urlsafe_b64decode(part['body']['data']).decode('utf-8')
-                    print("Body: ", body)
+                    message_data["body"] += body
                 elif part['mimeType'] == 'text/html':
-                    # Decode and print the HTML body of the email
-                    body = base64.urlsafe_b64decode(part['body']['data']).decode('utf-8')
-                    print("HTML Body: ", body)
+                    # Decode and store the HTML body of the email
+                    html_body = base64.urlsafe_b64decode(part['body']['data']).decode('utf-8')
+                    message_data["html_body"] += html_body
         else:
-            # If no parts are found, decode and print the body of the email directly
+            # If no parts are found, decode and store the body of the email directly
             body = base64.urlsafe_b64decode(message['payload']['body']['data']).decode('utf-8')
-            print("Body: ", body)
+            message_data["body"] = body
 
     except HttpError as error:
-        # Print the error if one occurs during the API call
-        print(f'An error occurred: {error}')
+        # Store the error in the dictionary if one occurs during the API call
+        message_data["error"] = str(error)
+
+    return message_data
 
 
-def apply_label(service, user_id, msg_id, label_id):
+def apply_label(service, msg_id, label_id):
+    # Hardcoding user_id to 'me' - currently do not have a use-case for another user_id
+    user_id = "me"
     try:
         # Apply the label to the message
         message = service.users().messages().modify(
@@ -148,9 +160,10 @@ def apply_label(service, user_id, msg_id, label_id):
         
         print(f"Label applied: {label_id} to message ID: {msg_id}")
         print("Updated Labels: ", message['labelIds'])
-
+        return True
     except HttpError as error:
         print(f'An error occurred: {error}')
+        return False
 
 
 def main():
@@ -160,7 +173,7 @@ def main():
     """
     service = get_api_service_obj()
 
-    labels = get_all_labels(service)
+    labels = list_labels(service)
     print("LABELS:")
     print(labels)
 

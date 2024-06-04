@@ -14,9 +14,9 @@ def test_github_secret():
     assert my_secret == "this_is_some_super_secret_info"
 
 
-def test_get_all_labels():
+def test_list_labels():
     service = quickstart.get_api_service_obj()
-    labels = quickstart.get_all_labels(service)    
+    labels = quickstart.list_labels(service)    
     label_names = [label["name"] for label in labels]
     expected_labels = ["CHAT", "SENT", "INBOX", "IMPORTANT", "TRASH", "DRAFT", "SPAM", 
             "CATEGORY_FORUMS", "CATEGORY_UPDATES", "CATEGORY_PERSONAL", 
@@ -33,5 +33,27 @@ def test_create_and_delete_label():
     print(f"{new_label=}")
     assert new_label["name"] == label_name
     assert quickstart.delete_label(service, new_label["id"])
+
+
+def test_list_messages():
+    service = quickstart.get_api_service_obj()
+    messages = quickstart.list_messages(service)
+    assert messages
+
+    test_message = {
+        "Subject": "test email 001",
+        "From": "testuser9448@gmail.com",
+        "To": "testuser9448@gmail.com",
+        "body": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+    }
     
-    
+    for message in messages:
+        message_data = quickstart.get_full_message(service, message['id'])
+        # print(message_data)
+        if message_data["headers"]["Subject"] == test_message["Subject"]:
+            assert test_message["From"] in message_data["headers"]["From"]
+            assert test_message["To"] in message_data["headers"]["To"]
+            
+            # Remove the line breaks from the message
+            message_body = message_data["body"].replace('\r\n', ' ').replace('\n', ' ').strip()
+            assert test_message["body"] == message_body
