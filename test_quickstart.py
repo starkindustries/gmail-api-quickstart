@@ -2,6 +2,7 @@ import os
 import random
 import quickstart
 
+
 def test_github_secret():
     """
     Test github secret 'MY_TEST_SECRET' to verify that secrets are stored in env vars
@@ -12,11 +13,6 @@ def test_github_secret():
     my_secret = os.getenv('MY_TEST_SECRET')
     assert my_secret == "this_is_some_super_secret_info"
 
-def hello_world():
-    return "Hello, World!"
-
-def test_hello_world():
-    assert hello_world() == "Hello, World!"
 
 def test_get_all_labels():
     service = quickstart.get_api_service_obj()
