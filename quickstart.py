@@ -75,6 +75,32 @@ def get_all_labels(service):
         print(f"An error occurred: {error}")
 
 
+def create_label(service, label_name):
+    label_body = {
+        'name': label_name,
+        'labelListVisibility': 'labelShow',
+        'messageListVisibility': 'show'
+    }
+    
+    try:
+        label = service.users().labels().create(userId='me', body=label_body).execute()
+        print(f"Label created: {label['name']} (ID: {label['id']})")
+        return label
+    except Exception as error:
+        print(f"An error occurred: {error}")
+        return None
+
+
+def delete_label(service, label_id):
+    try:
+        service.users().labels().delete(userId='me', id=label_id).execute()
+        print(f'Label with ID {label_id} deleted successfully.')
+        return True
+    except Exception as e:
+        print(f'An error occurred: {e}')
+        return False
+
+
 def get_full_message(service, user_id, msg_id):
     try:
         # Fetch the full message using the Gmail API
@@ -109,7 +135,6 @@ def get_full_message(service, user_id, msg_id):
     except HttpError as error:
         # Print the error if one occurs during the API call
         print(f'An error occurred: {error}')
-
 
 
 def apply_label(service, user_id, msg_id, label_id):
