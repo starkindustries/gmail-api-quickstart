@@ -73,7 +73,7 @@ def test_apply_label_to_message():
     for message in messages:
         message_data = quickstart.get_full_message(service, message['id'])
         if message_data["headers"]["Subject"] == "test email 002":
-            result_message = quickstart.apply_label(service, 'me', message['id'], new_label['id'])
+            result_message = quickstart.apply_label(service, message['id'], new_label['id'])
             assert new_label["id"] in result_message["labelIds"]
     
     # Clean-up: delete random label
